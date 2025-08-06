@@ -1,0 +1,34 @@
+Sub EliminaSegnaposto
+    Dim oDoc As Object
+    Dim oText As Object
+    Dim oSearch As Object
+    Dim oFound As Object
+    Dim oCursor As Object
+
+    oDoc = ThisComponent
+    If Not oDoc.supportsService("com.sun.star.text.TextDocument") Then
+        MsgBox "Questo non è un documento di testo.", 16, "Errore"
+        Exit Sub
+    End If
+
+    oText = oDoc.Text
+    oSearch = oDoc.createSearchDescriptor()
+
+    ' Cerca tutto il testo tra [[ e ]], incluse le parentesi
+    oSearch.SearchString = "\[\[.*?\]\]"
+    oSearch.SearchRegularExpression = True
+
+    oFound = oDoc.findFirst(oSearch)
+
+    While Not IsNull(oFound)
+        oFound.setString("") ' Elimina il testo trovato
+        oFound = oDoc.findNext(oFound.End, oSearch)
+    Wend
+
+    ' Imposta l’allineamento giustificato a tutto il testo
+    oCursor = oText.createTextCursor()
+    oCursor.gotoStart(False)
+    oCursor.gotoEnd(True)
+    oCursor.ParaAdjust = com.sun.star.style.ParagraphAdjust.BLOCK
+
+End Sub
