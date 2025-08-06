@@ -1,0 +1,57 @@
+Sub MinuscolaDopoDuePunti
+    Dim oDoc As Object
+    Dim oText As Object
+    Dim oCursor As Object
+    Dim oSearch As Object
+    Dim oFound As Object
+
+    oDoc = ThisComponent
+    If Not oDoc.supportsService("com.sun.star.text.TextDocument") Then
+        MsgBox "Questo non è un documento di testo.", 16, "Errore"
+        Exit Sub
+    End If
+
+    oText = oDoc.Text
+    oSearch = oDoc.createSearchDescriptor()
+    
+    ' Cerca pattern ": A" fino a ": Z" (ossia : seguito da spazio e lettera maiuscola)
+    oSearch.SearchString = ": [A-Z]"
+    oSearch.SearchRegularExpression = True
+
+    oFound = oDoc.findFirst(oSearch)
+
+    While Not IsNull(oFound)
+        Dim startPos As Object
+        Dim nextChar As String
+        Dim nextChar2 As String
+
+        ' Ottiene la posizione del carattere dopo la lettera trovata
+        startPos = oFound.End
+        oCursor = oText.createTextCursorByRange(startPos)
+
+        ' Estende di una lettera per leggere la successiva
+        oCursor.goRight(1, True)
+        nextChar = oCursor.getString()
+
+        If nextChar <> "" Then
+            If Not (nextChar >= "A" And nextChar <= "Z") Then
+                ' La seconda lettera NON è maiuscola, quindi modifichiamo la prima
+                ' Spostiamo al carattere da modificare (quello dopo ": ")
+                oCursor = oText.createTextCursorByRange(oFound.Start)
+                oCursor.goRight(2, False) ' Salta ": "
+                oCursor.goRight(1, True) ' Seleziona la lettera
+
+                Dim charToReplace As String
+                charToReplace = oCursor.getString()
+
+                ' Sostituisce con la versione minuscola
+                oCursor.setString(LCase(charToReplace))
+            End If
+        End If
+
+        ' Trova il prossimo match
+        oFound = oDoc.findNext(oFound.End, oSearch)
+    Wend
+
+    MsgBox "Correzione completata.", 64, "Fatto"
+End Sub
