@@ -1,0 +1,65 @@
+Sub CorreggiMaiuscoleDopoDuePunti()
+    Dim doc As Document
+    Dim rng As range
+    Dim i As Long
+    Dim contatore As Long
+    Dim carattere As String
+    Dim carattereSuccessivo As String
+    Dim testoCompleto As String
+    
+    ' Inizializza variabili
+    Set doc = ActiveDocument
+    Set rng = doc.range
+    contatore = 0
+    testoCompleto = rng.Text
+    
+    ' Disabilita l'aggiornamento dello schermo per velocizzare l'operazione
+    Application.ScreenUpdating = False
+    
+    ' Scorre tutto il testo del documento
+    For i = 1 To Len(testoCompleto) - 2
+        ' Verifica se il carattere corrente è ":"
+        If Mid(testoCompleto, i, 1) = ":" Then
+            ' Verifica se dopo i ":" c'è uno spazio seguito da una lettera maiuscola
+            If i + 2 <= Len(testoCompleto) Then
+                If Mid(testoCompleto, i + 1, 1) = " " Then
+                    carattere = Mid(testoCompleto, i + 2, 1)
+                    
+                    ' Verifica se il carattere è una lettera maiuscola
+                    If carattere >= "A" And carattere <= "Z" Then
+                        ' Verifica se c'è un carattere successivo e se è minuscolo
+                        If i + 3 <= Len(testoCompleto) Then
+                            carattereSuccessivo = Mid(testoCompleto, i + 3, 1)
+                            
+                            ' Se il carattere successivo è una lettera minuscola, procedi con la correzione
+                            If carattereSuccessivo >= "a" And carattereSuccessivo <= "z" Then
+                                ' Posiziona il range sul carattere da correggere
+                                Set rng = doc.range(i + 1, i + 2)
+                                
+                                ' Converte in minuscolo
+                                rng.Text = LCase(carattere)
+                                
+                                ' Incrementa il contatore
+                                contatore = contatore + 1
+                                
+                                ' Aggiorna il testo completo per riflettere le modifiche
+                                testoCompleto = Mid(testoCompleto, 1, i + 1) & LCase(carattere) & Mid(testoCompleto, i + 3)
+                            End If
+                        End If
+                    End If
+                End If
+            End If
+        End If
+    Next i
+    
+    ' Riabilita l'aggiornamento dello schermo
+    Application.ScreenUpdating = True
+    
+    ' Mostra il risultato
+    If contatore > 0 Then
+        MsgBox "Correzione completata!" & vbCrLf & "Numero di occorrenze corrette: " & contatore, vbInformation, "Risultato Correzione"
+    Else
+        MsgBox "Nessuna correzione necessaria.", vbInformation, "Risultato Correzione"
+    End If
+    
+End Sub
