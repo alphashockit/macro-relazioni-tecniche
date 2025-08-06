@@ -1,0 +1,50 @@
+Sub EvidenziaPossibiliFrasiDaEvitare()
+
+    Application.ScreenUpdating = False ' Velocizza l'esecuzione
+
+    Dim frasiDaCercare As Variant
+    Dim frase As Variant
+    Dim rngRicerca As range
+    Dim contatoreOccorrenze As Long
+
+    contatoreOccorrenze = 0
+
+    ' Array con le frasi da cercare
+    frasiDaCercare = Array("sebbene non vengano menzionate", "nel documento", ".doc", ".docx", ".pdf", "come si evince dal documento", "nel testo", "dal testo fornito")
+
+    ' Cicla per ogni frase che dobbiamo trovare
+    For Each frase In frasiDaCercare
+        Set rngRicerca = ActiveDocument.Content
+        rngRicerca.Find.ClearFormatting
+        
+        With rngRicerca.Find
+            .Text = frase
+            .MatchCase = False
+            .Forward = True
+            .Wrap = wdFindStop
+            .Format = False
+            .MatchWholeWord = False
+            .MatchWildcards = False
+        End With
+
+        ' Esegui la ricerca in un loop
+        Do
+            rngRicerca.Find.Execute
+
+            If rngRicerca.Find.Found Then
+                ' Applica l'evidenziazione
+                rngRicerca.HighlightColorIndex = wdYellow
+                ' Incrementa il contatore
+                contatoreOccorrenze = contatoreOccorrenze + 1 ' <-- INCREMENTO CONTATORE
+            Else
+                Exit Do
+            End If
+        Loop
+    Next frase
+
+    Application.ScreenUpdating = True
+
+    ' Messaggio finale che include il numero di occorrenze trovate
+    MsgBox "Operazione completata! Sono state evidenziate " & contatoreOccorrenze & " occorrenze.", vbInformation
+
+End Sub
