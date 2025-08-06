@@ -10,7 +10,7 @@ Sub EvidenziaPossibiliFrasiDaEvitare()
     contatoreOccorrenze = 0
 
     ' Array con le frasi da cercare
-    frasiDaCercare = Array("sebbene non vengano menzionate", "nel documento", ".doc", ".docx", ".pdf", "come si evince dal documento", "nel testo", "dal testo fornito")
+    frasiDaCercare = Array("sebbene", "nel documento", "nei documenti", ".doc", ".docx", ".pdf", "dal documento", "nel testo", "menzionati", "nomi specifici", "testo fornito", "non menzionato", "non fornisce", "menzionato", "menzionata", "menzionate", "presume", "presumono")
 
     ' Cicla per ogni frase che dobbiamo trovare
     For Each frase In frasiDaCercare
