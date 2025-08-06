@@ -1,0 +1,34 @@
+Sub EliminaSegnaposto()
+  ' Imposta la selezione all'inizio del documento
+  Selection.HomeKey Unit:=wdStory
+
+  ' Configura i parametri per la ricerca
+  With Selection.Find
+    .ClearFormatting
+    .Replacement.ClearFormatting
+    
+    ' La stringa di ricerca con caratteri jolly:
+    ' \[\[ : cerca le due parentesi quadre di apertura (i caratteri speciali necessitano di escape con \)
+    ' (*) : trova qualsiasi stringa di caratteri
+    ' \]\] : cerca le due parentesi quadre di chiusura
+    .Text = "\[\[*\]\]"
+    
+    ' Il testo con cui sostituire (stringa vuota per eliminare)
+    .Replacement.Text = ""
+    
+    .Forward = True
+    .Wrap = wdFindContinue
+    .Format = False
+    .MatchCase = False
+    .MatchWholeWord = False
+    .MatchWildcards = True ' Abilita l'uso dei caratteri jolly
+    .MatchSoundsLike = False
+    .MatchAllWordForms = False
+    
+    ' Esegue la sostituzione in tutto il documento
+    .Execute Replace:=wdReplaceAll
+    
+    ' Applica il formato giustificato a tutti i paragrafi
+    ActiveDocument.range.ParagraphFormat.Alignment = wdAlignParagraphJustify
+  End With
+End Sub
